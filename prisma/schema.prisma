@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+enum Status {
+  IN_PROGRESS
+  OPEN
+  COMPLETE
+  REFUSED
+  WAITING_SIGNATURE
+  WAITING_TIP
+  FAILED_TO_SEND_TERM
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  ixcId    Int
+  username String @unique
+  password String
+
+  @@map("users")
+}
+
+model Client {
+  id            String        @id @default(uuid())
+  clientId      Int
+  name          String
+  email         String
+  cpf           String        @unique
+  address       String
+  Portabilities Portability[]
+
+  @@map("clients")
+}
+
+model Portability {
+  id         String    @id @default(uuid())
+  id_os      Int       @unique
+  client     Client    @relation(fields: [client_id], references: [id])
+  client_id  String
+  signed     Boolean   @default(false)
+  signed_at  DateTime?
+  number     String[]
+  operator   String
+  status     Status    @default(OPEN)
+  created_at DateTime  @default(now())
+
+  @@map("portabilities")
+}

@@ -1,0 +1,35 @@
+{
+  "name": "nmultisip",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node build/server.js",
+    "build": "tsup src --out-dir build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/node-cron": "^3.0.11",
+    "@types/node-fetch": "^2.6.11",
+    "eslint": "^9.11.1",
+    "globals": "^15.10.0",
+    "prisma": "^5.20.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.8.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.0.0",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "zod": "^3.23.8"
+  }
+}
