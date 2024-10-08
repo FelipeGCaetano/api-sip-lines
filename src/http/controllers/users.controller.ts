@@ -6,9 +6,7 @@ import { UsersUseCase } from '../services/users.service'
 export async function createUser(req: FastifyRequest, res: FastifyReply) {
     const sendTermBodySchema = z.object({
         name: z.string(),
-        ixcId: z.number(),
-        username: z.string(),
-        password: z.string()
+        ixcId: z.number()
     })
     
     try {

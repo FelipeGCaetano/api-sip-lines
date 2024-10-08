@@ -36,6 +36,12 @@ export class IxcUseCase {
         const result: SipOSResult[] = []
 
         for (let os of querySipOS.data) {
+            const user = await prisma.user.findFirst({
+                where: {
+                    ixcId: Number(os.id_tecnico)
+                }
+            })
+
             const portabilityAlreadyExists = await prisma.portability.findFirst({
                 where: {
                     id_os: os.id
@@ -43,14 +49,16 @@ export class IxcUseCase {
             })
 
             if(portabilityAlreadyExists) {
-               continue 
+                await prisma.portability.update({
+                    where: {
+                        id_os: os.id
+                    },
+                    data: {
+                        assignee_id: user?.id
+                    }
+                }) 
+                continue
             }
-
-            const user = await prisma.user.findFirst({
-                where: {
-                    ixcId: Number(os.id_tecnico)
-                }
-            })
 
             await prisma.portability.create({
                 data: {

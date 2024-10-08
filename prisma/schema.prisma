@@ -25,9 +25,7 @@ datasource db {
 model User {
   id          String        @id @default(uuid())
   name        String
-  ixcId       Int
-  username    String        @unique
-  password    String
+  ixcId       Int           @unique
   Portability Portability[]
 
   @@map("users")
