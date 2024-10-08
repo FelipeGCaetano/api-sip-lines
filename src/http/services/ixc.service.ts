@@ -2,10 +2,12 @@ import { IxcApi } from "@/common/ixc";
 import { IxcFilterParams, SipOSResult } from "@/@types/ixc";
 import { ApplicationError } from "@/errors/application";
 import { readFileSync } from "fs";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient()
 
 export class IxcUseCase {
     async checkSipOS() {
-        const collaborators = JSON.parse(readFileSync("/home/NmultiSip/files/commercial_colaborators.json"))
         const ixc = new IxcApi()
         const filter: IxcFilterParams[] = [
             {
@@ -34,12 +36,39 @@ export class IxcUseCase {
         const result: SipOSResult[] = []
 
         for (let os of querySipOS.data) {
+            const portabilityAlreadyExists = await prisma.portability.findFirst({
+                where: {
+                    id_os: os.id
+                }
+            })
+
+            if(portabilityAlreadyExists) {
+               continue 
+            }
+
+            const user = await prisma.user.findFirst({
+                where: {
+                    ixcId: Number(os.id_tecnico)
+                }
+            })
+
+            await prisma.portability.create({
+                data: {
+                    id_os: os.id,
+                    assignee_id: user?.id
+                }
+            })
+
             result.push({
                 id: os.id,
                 ClientId: os.id_cliente,
-                assignee: collaborators.find((item: SipOSResult) => item.id === os.id_tecnico).funcionario,
+                assignee: user?.name!,
                 Status: "aberto"
             })
+        }
+
+        if (result.length < 1) {
+            return "Nenhuma nova O.S gerada"
         }
 
         return result

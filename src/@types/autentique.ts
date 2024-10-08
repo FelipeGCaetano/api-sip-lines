@@ -1,6 +1,6 @@
 export interface PortabilityData {
     client: {
-        clientId: number,
+        clientId: string,
         name: string,
         cpf: string,
         address: string,
@@ -9,6 +9,6 @@ export interface PortabilityData {
     portability: {
         number: string,
         operator: string,
-        idOs: number
+        idOs: string
     }
 }

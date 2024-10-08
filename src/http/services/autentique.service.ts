@@ -8,7 +8,7 @@ export class AutentiqueUseCase {
     async sendTerm(data: PortabilityData) {
         try {
             let client_id;
-    
+
             const clientAlreadyExists = await prisma.client.findFirst({
                 where: {
                     cpf: data.client.cpf
@@ -24,7 +24,7 @@ export class AutentiqueUseCase {
             } else {
                 client_id = clientAlreadyExists.id; 
             }
-    
+            
             const portabilityAlreadyExists = await prisma.portability.findFirst({
                 where: {
                     id_os: data.portability.idOs
@@ -32,17 +32,26 @@ export class AutentiqueUseCase {
             })
     
             if (portabilityAlreadyExists) {
-                throw new ApplicationError("vai toma no cu", 500)
+                await prisma.portability.update({
+                    where: {
+                        id_os: data.portability.idOs
+                    },
+                    data: {
+                        client_id,
+                        number: [data.portability.number],
+                        operator: data.portability.operator
+                    }
+                })
+            } else {
+                await prisma.portability.create({
+                    data: {
+                        id_os: data.portability.idOs,
+                        client_id, 
+                        number: [data.portability.number],
+                        operator: data.portability.operator
+                    }
+                });
             }
-    
-            const portability = await prisma.portability.create({
-                data: {
-                    id_os: data.portability.idOs,
-                    client_id, 
-                    number: [data.portability.number],
-                    operator: data.portability.operator
-                }
-            });
     
             const opt = {
                 method: 'POST',
@@ -68,7 +77,7 @@ export class AutentiqueUseCase {
             if(result.status == "success") {
                 await prisma.portability.update({
                     where: {
-                        id: portability.id
+                        id_os: data.portability.idOs
                     },
                     data: {
                         status: "WAITING_SIGNATURE"
@@ -77,7 +86,7 @@ export class AutentiqueUseCase {
             } else {
                 await prisma.portability.update({
                     where: {
-                        id: portability.id
+                        id_os: data.portability.idOs
                     },
                     data: {
                         status: "FAILED_TO_SEND_TERM"
